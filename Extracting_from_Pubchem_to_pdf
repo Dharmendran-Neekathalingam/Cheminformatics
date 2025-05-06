@@ -1,0 +1,33 @@
+import requests
+from fpdf import FPDF
+
+def get_smiles(compound):
+    url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{compound}/property/CanonicalSMILES/JSON"
+    res = requests.get(url)
+    if res.status_code == 200:
+        try:
+            return res.json()['PropertyTable']['Properties'][0]['CanonicalSMILES']
+        except:
+            return None
+    else:
+        print("no")
+        
+def gen_pdf(compound_list, filename="C:\\Users\\dharm\\Downloads\\Aanum_Analytics_mini_project\\reports.pdf"):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial",size=11)
+    pdf.set_title("Small molecule Reports")
+    
+    #Creating pdf cell
+    pdf.cell(200,10,"Small molecule Reports",ln=True)
+    pdf.ln(10)
+    #Adding Compounds to pdf
+    for compound in compound_list:
+        smiles = get_smiles(compound)
+        if smiles:
+            pdf.cell(200,10, f"Compound: {compound}", ln=True)
+            pdf.multi_cell(200,10,f"Smiles: {smiles}")
+            pdf.ln(5)
+        else:
+            pdf.write("novalue")
+    pdf.output(filename)
