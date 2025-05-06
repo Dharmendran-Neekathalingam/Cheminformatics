@@ -1,0 +1,21 @@
+from fpdf import FPDF
+import pdfplumber
+import pandas as pd
+import re
+
+filename = f"C:\\Users\\dharm\\Downloads\\Aanum_Analytics_mini_project\\reports.pdf"
+
+data=[]
+with pdfplumber.open(filename) as pdf:
+    for page in pdf.pages:
+        text=page.extract_text()
+        print(text)
+
+compound_names = re.findall(r'Compound:\s*(.+)', text)
+smiles_strings = re.findall(r'Smiles:\s*(.+)', text)
+df_comp_smile = pd.DataFrame({
+    'Compound':compound_names,
+    'SMILES':smiles_strings
+})
+print(df_comp_smile)
+df_comp_smile.to_csv("C:\\Users\\dharm\\Downloads\\Aanum_Analytics_mini_project\\reports.csv",index = False)
