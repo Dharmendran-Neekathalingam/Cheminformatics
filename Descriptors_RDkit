@@ -1,0 +1,23 @@
+import pandas as pd
+from rdkit import Chem
+from rdkit.Chem import Draw
+from rdkit.Chem import Descriptors
+
+df_new_Comp = pd.read_csv("C:\\Users\\dharm\\Downloads\\Aanum_Analytics_mini_project\\reports.csv")
+df_new_Comp['Molecule'] = df_new_Comp['SMILES'].apply(lambda s: Chem.MolFromSmiles(s))
+Mol_list = df_new_Comp['Molecule'].tolist()
+Comp_list = df_new_Comp['Compound'].tolist()
+Draw.MolsToGridImage(Mol_list,legends=Comp_list)
+
+Smiles_list = df_new_Comp['SMILES'].tolist()
+
+df_new_Comp['Molecular_weight'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.MolWt(Chem.MolFromSmiles(s)))
+df_new_Comp['Hydrophobicity'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.MolLogP(Chem.MolFromSmiles(s)))
+df_new_Comp['Rotational_bonds'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.NumRotatableBonds(Chem.MolFromSmiles(s)))
+df_new_Comp['H-Donors'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.NumHDonors(Chem.MolFromSmiles(s)))
+df_new_Comp['H-acceptors'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.NumHAcceptors(Chem.MolFromSmiles(s)))
+df_new_Comp['Topological_polar_surface_area'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.TPSA(Chem.MolFromSmiles(s)))
+df_new_Comp['Ring_count'] = df_new_Comp['SMILES'].apply(lambda s: Descriptors.RingCount(Chem.MolFromSmiles(s)))
+df_new_Comp['atom_count'] = df_new_Comp['SMILES'].apply(lambda s: (Chem.MolFromSmiles(s)).GetNumAtoms())
+
+df_new_Comp.to_csv('C:\\Users\\dharm\\Downloads\\Aanum_Analytics_mini_project\\Description_data.csv',index=False)
